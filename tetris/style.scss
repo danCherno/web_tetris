@@ -1,57 +1,57 @@
-body {
-// root colors & text color
-:root { 
-    --color-primary: #333;
-    --color-secondary: #f1cccc;
-    --color-tertiary: #fff;
-    --color-quaternary: #111;
-    --color-quinary: #f00;
-    --color-text-dark: #333;
-    --color-text-lite: #faf6f6;
-
+:root {
+  --color-primary: #333;
+  --color-secondary: #a9c0ff;
+  --color-tertiary: #fff;
+  --color-quaternary: #ef0a0a;
+  --color-quinary: rgb(31, 21, 219);
+  --color-text-dark: #333;
+  --color-text-lite: #faf6f6;
 }
-
-
-
-  margin: 0;
-  padding: 0;
+body {
   font-family: Arial, sans-serif;
-
+  display: flex;
+  flex-direction: column;
 
   .pageHeader {
     text-align: center;
     padding: 10px;
-    background: var(--color-secondary);
-    color: vae(--color-text-lite);
+    background-color: var(--color-secondary);
+    color: var(--color-text-dark);
     font-size: 20px;
   }
 
   .gameInformation {
     display: flex;
+    align-items: center;
+    justify-content: center;
+
+    align-self: center;
     padding: 10px;
-    background: #333;
+    background-color: #333;
     color: var(--color-text-lite);
     margin: 4%;
-    text-align: center;
     width: 70%;
     height: 10vh;
   }
   .gameLayout {
     display: flex;
+    align-items: center;
+    justify-content: center;
     margin: 2%;
+    padding: 10px;
 
     align-self: center;
     width: 80%;
     height: 100vh;
-    background: var(--color-primary);
+    background-color: var(--color-secondary);
     border: 2px solid var(--color-primary);
   }
 
   .pageFooter {
     text-align: center;
     padding: 10px;
-    background: var(--color-secondary);
-    color: var(--color-text-lite);
+    background-color: var(--color-secondary);
+    color: var(--color-text-dark);
     font-size: 20px;
   }
 }
