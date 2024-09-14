@@ -109,7 +109,10 @@ function clearLine(row: number): void {
 }
 console.log(gameGrid);
 // clearLine(5); //testing
+
 // render main
+
+
 
 
 
