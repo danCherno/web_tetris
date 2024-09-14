@@ -3,9 +3,10 @@
   --color-secondary: #a9c0ff;
   --color-tertiary: #fff;
   --color-quaternary: #ef0a0a;
-  --color-quinary: rgb(31, 21, 219);
+  --color-quinary: rgb(107, 107, 107);
   --color-text-dark: #333;
   --color-text-lite: #faf6f6;
+  --block-size: 1.5rem;
 }
 body {
   font-family: Arial, sans-serif;
@@ -24,7 +25,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-
     align-self: center;
     padding: 10px;
     background-color: #333;
@@ -32,21 +32,37 @@ body {
     margin: 4%;
     width: 70%;
     height: 10vh;
+
   }
-  .gameLayout {
-    display: flex;
-    align-items: center;
+  #gameLayout {
+    // a20*10 grid
+    display: grid;
+    // grid-template-columns: repeat(10, 1fr);
+    // grid-template-rows: repeat(20, 1fr);
+
+    gap: 5px;
     justify-content: center;
     margin: 2%;
-    padding: 10px;
-
+    // padding: 10px;
     align-self: center;
     width: 80%;
-    height: 100vh;
-    background-color: var(--color-secondary);
+    // height: 100vh;
+    background-color: var(--color-quinary);
     border: 2px solid var(--color-primary);
   }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
 
+  td {
+    width: var(--block-size);
+    height:var(--block-size);
+    text-align: center;
+    border: 1px solid var(--color-primary);
+    background-color: var(--color-quinary);
+  }
+  
   .pageFooter {
     text-align: center;
     padding: 10px;

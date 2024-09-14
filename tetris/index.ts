@@ -107,7 +107,22 @@ function clearLine(row: number): void {
   gameGrid.push(Array(10).fill('1'));
   score++;
 }
+function renderGridToHTML(grid: string[][]): string {
+  let html = '<table>';
+  grid.forEach(row => {
+    html += '<tr>';
+    row.forEach(cell => {
+      html += `<td>${cell}</td>`;
+    });
+    html += '</tr>';
+  });
+  html += '</table>';
+  return html;
+}
 console.log(gameGrid);
+
+document.getElementById('gameLayout')!.innerHTML = renderGridToHTML(gameGrid);
+
 // clearLine(5); //testing
 
 // render main
