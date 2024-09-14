@@ -8,11 +8,12 @@ let score: number = 0;
 class Block
 {
   // properties
-  color: string;  // color of the block
-  isImportant: boolean; // whether the block is checked for isBlockUnder
-  id: string; // unique id for the block (used a lot for grid)
-  blockElement: HTMLElement; // the block element in the DOM
-  posInPiece: string; // position of the block in the piece (A-D)
+  private color: string;  // color of the block
+  private isImportant: boolean; // whether the block is checked for isBlockUnder
+  private id: string; // unique id for the block (used a lot for grid)
+  private blockElement: HTMLElement; // the block element in the DOM
+  private posInPiece: string; // position of the block in the piece (A-D)
+  private position: [number, number]; // position of the block in the game grid (x, y)
 
   constructor(color: string, posInPiece: string, isImportant: boolean) 
   {
@@ -22,6 +23,7 @@ class Block
     this.id = `b${posInPiece}-${crypto.randomUUID()}`; // example: "bC-36b8f84d-df4e-4d49-b662-bcde71a8764f"
     this.posInPiece = posInPiece;
     this.blockElement = document.createElement('div');
+    this.position = [5, 22]; //center top of the game grid
 
 
     // block element setup
@@ -30,7 +32,73 @@ class Block
     this.blockElement.style.backgroundColor = this.color;
     document.getElementById('gameLayout')!.appendChild(this.blockElement); // adding block to the game layout (fyi, ! is for ignoring null values)
     
+    // getters
 
+    function getColor(): string
+    {
+      return this.color;
+    }
+
+    function getIsImportant(): boolean
+    {
+      return this.isImportant;
+    }
+
+    function getId(): string
+    {
+      return this.id;
+    }
+
+    function getBlockElement(): HTMLElement
+    {
+      return this.blockElement;
+    }
+
+    function getPosition(): [number, number]
+    {
+      return this.position;
+    }
+
+    function getPositionInPiece(): string
+    {
+      return this.posInPiece;
+    }
+
+    // methods
+
+    function fall(): void
+    {
+      gameGrid[this.position[0]][this.position[1]] = '0';
+      this.position[1]--;
+      gameGrid[this.position[0]][this.position[1]] = this.id;
+
+      //todo: update for css grid
+    }
+
+    function right(): void
+    {
+      gameGrid[this.position[0]][this.position[1]] = '0';
+      this.position[0]--;
+      gameGrid[this.position[0]][this.position[1]] = this.id;
+
+      //todo: update for css grid
+    }
+
+    function left(): void
+    {
+      gameGrid[this.position[0]][this.position[1]] = '0';
+      this.position[0]++;
+      gameGrid[this.position[0]][this.position[1]] = this.id;
+
+      //todo: update for css grid
+    }
+
+    function isBlockUnder(): boolean
+    {
+      if (!isImportant) return false;
+      if (gameGrid[this.position[0] - 1][this.position[1]] !== '0') return true;
+      return false;
+    }
   }
 }
 
