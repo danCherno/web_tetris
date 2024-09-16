@@ -7,7 +7,8 @@ let score: number = 0;
 // clear line function (row index) slice the row out and create a new row of zeros at the end
 // gameGrid[5] = Array(10).fill('1'); //testing
 
-class Block {
+class Block
+{
   // properties
   private color: string; // color of the block
   private isImportant: boolean; // whether the block is checked for isBlockUnder
@@ -30,63 +31,219 @@ class Block {
     this.blockElement.id = this.id;
     this.blockElement.style.backgroundColor = this.color;
     document.getElementById("gameLayout")!.appendChild(this.blockElement); // adding block to the game layout (fyi, ! is for ignoring null values)
+  }
+  // getters
 
-    // getters
+  getColor(): string {
+    return this.color;
+  }
 
-    function getColor(): string {
-      return this.color;
-    }
+  getIsImportant(): boolean {
+    return this.isImportant;
+  }
 
-    function getIsImportant(): boolean {
-      return this.isImportant;
-    }
+  getId(): string {
+    return this.id;
+  }
 
-    function getId(): string {
-      return this.id;
-    }
+  getBlockElement(): HTMLElement {
+    return this.blockElement;
+  }
 
-    function getBlockElement(): HTMLElement {
-      return this.blockElement;
-    }
+  getPosition(): [number, number] {
+    return this.position;
+  }
 
-    function getPosition(): [number, number] {
-      return this.position;
-    }
+  getPositionInPiece(): string {
+    return this.posInPiece;
+  }
 
-    function getPositionInPiece(): string {
-      return this.posInPiece;
-    }
+  // methods
 
-    // methods
+  down(): void {
+    gameGrid[this.position[0]][this.position[1]] = "0";
+    this.position[1]--;
+    gameGrid[this.position[0]][this.position[1]] = this.id;
 
-    function fall(): void {
-      gameGrid[this.position[0]][this.position[1]] = "0";
-      this.position[1]--;
-      gameGrid[this.position[0]][this.position[1]] = this.id;
+    //todo: update for css grid
+  }
 
-      //todo: update for css grid
-    }
+  right(): void {
+    gameGrid[this.position[0]][this.position[1]] = "0";
+    this.position[0]--;
+    gameGrid[this.position[0]][this.position[1]] = this.id;
 
-    function right(): void {
-      gameGrid[this.position[0]][this.position[1]] = "0";
-      this.position[0]--;
-      gameGrid[this.position[0]][this.position[1]] = this.id;
+    //todo: update for css grid
+  }
 
-      //todo: update for css grid
-    }
+  left(): void {
+    gameGrid[this.position[0]][this.position[1]] = "0";
+    this.position[0]++;
+    gameGrid[this.position[0]][this.position[1]] = this.id;
 
-    function left(): void {
-      gameGrid[this.position[0]][this.position[1]] = "0";
-      this.position[0]++;
-      gameGrid[this.position[0]][this.position[1]] = this.id;
+    //todo: update for css grid
+  }
 
-      //todo: update for css grid
-    }
+  isBlockUnder(): boolean {
+    if (!this.isImportant) return false;
+    if (gameGrid[this.position[0] - 1][this.position[1]] !== "0") return true;
+    return false;
+  }
+}
 
-    function isBlockUnder(): boolean {
-      if (!isImportant) return false;
-      if (gameGrid[this.position[0] - 1][this.position[1]] !== "0") return true;
-      return false;
+class Piece
+{
+  // properties
+  type: string;
+  blocks: Block[];
+  isMoving: boolean;
+
+  constructor(type: string) 
+  {
+    this.type = type;
+    this.buildPiece();
+    this.isMoving = true;
+  }
+
+  buildPiece(): void
+  {
+    switch (this.type)
+    {
+      /* XXXX */
+      case "I":
+        this.blocks = [
+          new Block("blue", "A", false),
+          new Block("blue", "B", false),
+          new Block("blue", "C", false),
+          new Block("blue", "D", true),
+        ];
+
+        this.blocks[1].down();
+
+        this.blocks[2].down();
+        this.blocks[2].down();
+
+        this.blocks[3].down();
+        this.blocks[3].down();
+        this.blocks[3].down();
+
+        break;
+
+      /* XX
+          XX */
+      case "Z":
+        this.blocks = [
+          new Block("purple", "A", true),
+          new Block("purple", "B", false),
+          new Block("purple", "C", false),
+          new Block("purple", "D", true),
+        ];
+
+        this.blocks[0].left();
+
+        this.blocks[2].down();
+
+        this.blocks[3].down();
+        this.blocks[3].right();
+
+        break;
+
+      /* XX
+        XX  */
+      case "S":
+        this.blocks = [
+          new Block("green", "A", true),
+          new Block("green", "B", false),
+          new Block("green", "C", false),
+          new Block("green", "D", true),
+        ];
+
+        this.blocks[1].right();
+
+        this.blocks[2].down();
+
+        this.blocks[3].down();
+        this.blocks[3].left();
+
+        break;
+
+      /*    X
+          XXX */
+      case "L":
+        this.blocks = [
+          new Block("orange", "A", false),
+          new Block("orange", "B", false),
+          new Block("orange", "C", true),
+          new Block("orange", "D", true),
+        ];
+
+        this.blocks[1].down();
+
+        this.blocks[2].down();
+        this.blocks[2].down();
+
+        this.blocks[3].down();
+        this.blocks[3].down();
+        this.blocks[3].right();
+
+        break;
+
+        /* X
+           XXX */
+      case "J":
+        this.blocks = [
+          new Block("cyan", "A", false),
+          new Block("cyan", "B", false),
+          new Block("cyan", "C", true),
+          new Block("cyan", "D", true),
+        ];
+
+        this.blocks[1].down();
+
+        this.blocks[2].down();
+        this.blocks[2].down();
+
+        this.blocks[3].down();
+        this.blocks[3].down();
+        this.blocks[3].left();
+
+        break;
+
+        /*  XX
+            XX */
+      case "O":
+        this.blocks = [
+          new Block("yellow", "A", false),
+          new Block("yellow", "B", false),
+          new Block("yellow", "C", true),
+          new Block("yellow", "D", true),
+        ];
+
+        this.blocks[1].right();
+
+        this.blocks[2].down();
+
+        this.blocks[3].down();
+        this.blocks[3].right();
+
+        break;
+        /* XXX
+            X */
+case "T":
+        this.blocks = [
+          new Block("green", "A", true),
+          new Block("green", "B", false),
+          new Block("green", "C", true),
+          new Block("green", "D", true),
+        ];
+
+        this.blocks[0].left();
+
+        this.blocks[2].right();
+
+        this.blocks[3].down();
+
+        break;
     }
   }
 }
