@@ -1,9 +1,8 @@
 // array of zeros
-const gameGrid: string[][] = Array.from({ length: 22 }, (_, rowIndex) =>
-  Array.from({ length: 10 }, (_, colIndex) => `${rowIndex},${colIndex}`)
-);
+const gameGrid: string[][] = Array(22).fill(null).map(() => Array(10).fill('0'));
 let score: number = 0;
-// console.log(gameGrid); // testing
+let curPiece: number;
+
 // clear line function (row index) slice the row out and create a new row of zeros at the end
 // gameGrid[5] = Array(10).fill('1'); //testing
 
@@ -24,7 +23,7 @@ class Block
     this.id = `b${posInPiece}-${crypto.randomUUID()}`; // example: "bC-36b8f84d-df4e-4d49-b662-bcde71a8764f"
     this.posInPiece = posInPiece;
     this.blockElement = document.createElement("div");
-    this.position = [5, 22]; //center top of the game grid
+    this.position = [21, 4]; //center top of the game grid
 
     // block element setup
     this.blockElement.className = `block`;
@@ -62,32 +61,35 @@ class Block
 
   down(): void {
     gameGrid[this.position[0]][this.position[1]] = "0";
-    this.position[1]--;
-    gameGrid[this.position[0]][this.position[1]] = this.id;
-
+    this.position[0]--;
     //todo: update for css grid
   }
 
   right(): void {
     gameGrid[this.position[0]][this.position[1]] = "0";
-    this.position[0]--;
-    gameGrid[this.position[0]][this.position[1]] = this.id;
+    this.position[1]--;
 
     //todo: update for css grid
   }
 
   left(): void {
     gameGrid[this.position[0]][this.position[1]] = "0";
-    this.position[0]++;
-    gameGrid[this.position[0]][this.position[1]] = this.id;
+    this.position[1]++;
 
     //todo: update for css grid
   }
 
   isBlockUnder(): boolean {
     if (!this.isImportant) return false;
-    if (gameGrid[this.position[0] - 1][this.position[1]] !== "0") return true;
+    if (0 == this.position[0]) return true;
+    if (gameGrid[this.position[0] - 1][this.position[1]] != "0") return true;
     return false;
+  }
+
+  renderBlock(): void 
+  {
+    gameGrid[this.position[0]][this.position[1]] = this.id;
+    document.getElementById("gameLayout")!.innerHTML = renderGridToHTML(gameGrid);
   }
 }
 
@@ -103,6 +105,8 @@ class Piece
     this.type = type;
     this.buildPiece();
     this.isMoving = true;
+
+    curPiece = setInterval(() => this.dropPiece(), 100);
   }
 
   buildPiece(): void
@@ -135,7 +139,7 @@ class Piece
         this.blocks = [
           new Block("purple", "A", true),
           new Block("purple", "B", false),
-          new Block("purple", "C", false),
+          new Block("purple", "C", true),
           new Block("purple", "D", true),
         ];
 
@@ -145,25 +149,24 @@ class Piece
 
         this.blocks[3].down();
         this.blocks[3].right();
-
         break;
 
       /* XX
         XX  */
       case "S":
         this.blocks = [
-          new Block("green", "A", true),
-          new Block("green", "B", false),
-          new Block("green", "C", false),
+          new Block("green", "A", false),
+          new Block("green", "B", true),
+          new Block("green", "C", true),
           new Block("green", "D", true),
         ];
 
         this.blocks[1].right();
 
         this.blocks[2].down();
+        this.blocks[2].left();
 
         this.blocks[3].down();
-        this.blocks[3].left();
 
         break;
 
@@ -240,11 +243,33 @@ case "T":
         this.blocks[0].left();
 
         this.blocks[2].right();
-
         this.blocks[3].down();
 
         break;
     }
+  }
+
+  dropPiece(): void 
+  {
+    this.landPiece();
+    if (!this.isMoving) return;
+
+    this.blocks.forEach((block) => block.down());
+    this.blocks.forEach((block) => block.renderBlock());
+  }
+
+  landPiece(): void 
+  {
+    for (let block of this.blocks)
+    {
+      if (block.isBlockUnder())
+        {
+          this.isMoving = false;
+          clearInterval(curPiece);
+          generatePiece();
+          return;
+        }
+      };
   }
 }
 
@@ -265,9 +290,23 @@ function renderGridToHTML(grid: string[][]): string {
   html += "</table>";
   return html;
 }
-console.log(gameGrid);
 
-document.getElementById("gameLayout")!.innerHTML = renderGridToHTML(gameGrid);
+function generatePiece(): void
+{
+  const pieces = ["I", "Z", "S", "L", "J", "O", "T"];
+  const randomPiece = pieces[Math.floor(Math.random() * pieces.length)];
+  new Piece(randomPiece);
+}
+
+
+function main(): void
+{
+  generatePiece();
+}
+main();
+
+
+//document.getElementById("gameLayout")!.innerHTML = renderGridToHTML(gameGrid);
 
 // clearLine(5); //testing
 
