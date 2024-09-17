@@ -11,16 +11,16 @@ class Block
   // properties
   private color: string; // color of the block
   private isImportant: boolean; // whether the block is checked for isBlockUnder
-  private id: string; // unique id for the block (used a lot for grid)
+  private id: string; // unique id of the piece (used a lot for grid)
   private blockElement: HTMLElement; // the block element in the DOM
   private posInPiece: string; // position of the block in the piece (A-D)
   private position: [number, number]; // position of the block in the game grid (x, y)
 
-  constructor(color: string, posInPiece: string, isImportant: boolean) {
+  constructor(color: string, posInPiece: string, isImportant: boolean, id: string) {
     // assignments
     this.color = color;
     this.isImportant = isImportant;
-    this.id = `b${posInPiece}-${crypto.randomUUID()}`; // example: "bC-36b8f84d-df4e-4d49-b662-bcde71a8764f"
+    this.id = `b${posInPiece}-${id}`; // example: "bC-36b8f84d-df4e-4d49-b662-bcde71a8764f"
     this.posInPiece = posInPiece;
     this.blockElement = document.createElement("div");
     this.position = [21, 4]; //center top of the game grid
@@ -99,13 +99,15 @@ class Piece
   type: string;
   blocks: Block[];
   isMoving: boolean;
+  private id: string;
   private eventNumber: number;
 
   constructor(type: string) 
   {
+    this.id = crypto.randomUUID();
     this.type = type;
-    this.buildPiece();
     this.isMoving = true;
+    this.buildPiece();
 
     this.eventNumber = setInterval(() => this.dropPiece(), 1000);
   }
@@ -117,10 +119,10 @@ class Piece
       /* XXXX */
       case "I":
         this.blocks = [
-          new Block("blue", "A", false),
-          new Block("blue", "B", false),
-          new Block("blue", "C", false),
-          new Block("blue", "D", true),
+          new Block("blue", "A", false, this.id),
+          new Block("blue", "B", false, this.id),
+          new Block("blue", "C", false, this.id),
+          new Block("blue", "D", true, this.id),
         ];
 
         this.blocks[1].down();
@@ -138,10 +140,10 @@ class Piece
           XX */
       case "Z":
         this.blocks = [
-          new Block("purple", "A", true),
-          new Block("purple", "B", false),
-          new Block("purple", "C", true),
-          new Block("purple", "D", true),
+          new Block("purple", "A", true, this.id),
+          new Block("purple", "B", false, this.id),
+          new Block("purple", "C", true, this.id),
+          new Block("purple", "D", true, this.id),
         ];
 
         this.blocks[0].left();
@@ -156,10 +158,10 @@ class Piece
         XX  */
       case "S":
         this.blocks = [
-          new Block("green", "A", false),
-          new Block("green", "B", true),
-          new Block("green", "C", true),
-          new Block("green", "D", true),
+          new Block("green", "A", false, this.id),
+          new Block("green", "B", true, this.id),
+          new Block("green", "C", true, this.id),
+          new Block("green", "D", true, this.id),
         ];
 
         this.blocks[1].right();
@@ -175,10 +177,10 @@ class Piece
           XXX */
       case "L":
         this.blocks = [
-          new Block("orange", "A", false),
-          new Block("orange", "B", false),
-          new Block("orange", "C", true),
-          new Block("orange", "D", true),
+          new Block("orange", "A", false, this.id),
+          new Block("orange", "B", false, this.id),
+          new Block("orange", "C", true, this.id),
+          new Block("orange", "D", true, this.id),
         ];
 
         this.blocks[1].down();
@@ -196,10 +198,10 @@ class Piece
            XXX */
       case "J":
         this.blocks = [
-          new Block("cyan", "A", false),
-          new Block("cyan", "B", false),
-          new Block("cyan", "C", true),
-          new Block("cyan", "D", true),
+          new Block("cyan", "A", false, this.id),
+          new Block("cyan", "B", false, this.id),
+          new Block("cyan", "C", true, this.id),
+          new Block("cyan", "D", true, this.id),
         ];
 
         this.blocks[1].down();
@@ -217,10 +219,10 @@ class Piece
             XX */
       case "O":
         this.blocks = [
-          new Block("yellow", "A", false),
-          new Block("yellow", "B", false),
-          new Block("yellow", "C", true),
-          new Block("yellow", "D", true),
+          new Block("yellow", "A", false, this.id),
+          new Block("yellow", "B", false, this.id),
+          new Block("yellow", "C", true, this.id),
+          new Block("yellow", "D", true, this.id),
         ];
 
         this.blocks[1].right();
@@ -235,10 +237,10 @@ class Piece
             X */
 case "T":
         this.blocks = [
-          new Block("green", "A", true),
-          new Block("green", "B", false),
-          new Block("green", "C", true),
-          new Block("green", "D", true),
+          new Block("green", "A", true, this.id),
+          new Block("green", "B", false, this.id),
+          new Block("green", "C", true, this.id),
+          new Block("green", "D", true, this.id),
         ];
 
         this.blocks[0].left();
@@ -277,6 +279,8 @@ case "T":
     for (let block of this.blocks)
     {
       if (block.getPosition()[1] == 0) return;
+      const nextBlockId = (gameGrid[block.getPosition()[0]][block.getPosition()[1] - 1]);
+      if (nextBlockId !="0") if (nextBlockId.slice(3) != this.id) return;
     }
 
     this.blocks.forEach((block) => block.right());
@@ -288,6 +292,8 @@ case "T":
     for (let block of this.blocks)
     {
       if (block.getPosition()[1] == 9) return;
+      const nextBlockId = (gameGrid[block.getPosition()[0]][block.getPosition()[1] + 1]);
+      if (nextBlockId !="0") if (nextBlockId.slice(3) != this.id) return;
     }
 
     this.blocks.forEach((block) => block.left());
