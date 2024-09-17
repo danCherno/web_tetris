@@ -1,7 +1,7 @@
 // array of zeros
 const gameGrid: string[][] = Array(22).fill(null).map(() => Array(10).fill('0'));
 let score: number = 0;
-let curPiece: number;
+let curPiece: Piece;
 
 // clear line function (row index) slice the row out and create a new row of zeros at the end
 // gameGrid[5] = Array(10).fill('1'); //testing
@@ -99,6 +99,7 @@ class Piece
   type: string;
   blocks: Block[];
   isMoving: boolean;
+  private eventNumber: number;
 
   constructor(type: string) 
   {
@@ -106,7 +107,7 @@ class Piece
     this.buildPiece();
     this.isMoving = true;
 
-    curPiece = setInterval(() => this.dropPiece(), 100);
+    this.eventNumber = setInterval(() => this.dropPiece(), 1000);
   }
 
   buildPiece(): void
@@ -265,11 +266,32 @@ case "T":
       if (block.isBlockUnder())
         {
           this.isMoving = false;
-          clearInterval(curPiece);
-          generatePiece();
+          clearInterval(this.eventNumber);
+          curPiece = generatePiece();
           return;
         }
       };
+  }
+  movePieceLeft(): void 
+  {
+    for (let block of this.blocks)
+    {
+      if (block.getPosition()[1] == 0) return;
+    }
+
+    this.blocks.forEach((block) => block.right());
+    this.blocks.forEach((block) => block.renderBlock());
+  }
+
+  movePieceRight(): void
+  {
+    for (let block of this.blocks)
+    {
+      if (block.getPosition()[1] == 9) return;
+    }
+
+    this.blocks.forEach((block) => block.left());
+    this.blocks.forEach((block) => block.renderBlock());
   }
 }
 
@@ -291,17 +313,23 @@ function renderGridToHTML(grid: string[][]): string {
   return html;
 }
 
-function generatePiece(): void
+function generatePiece(): Piece
 {
   const pieces = ["I", "Z", "S", "L", "J", "O", "T"];
   const randomPiece = pieces[Math.floor(Math.random() * pieces.length)];
-  new Piece(randomPiece);
+  return new Piece(randomPiece);
 }
 
 
 function main(): void
 {
-  generatePiece();
+  curPiece = generatePiece();
+  // movement key listeners
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowRight") curPiece!.movePieceRight();
+    if (event.key === "ArrowLeft") curPiece!.movePieceLeft();
+    if (event.key === "ArrowDown") curPiece!.dropPiece();
+  });
 }
 main();
 

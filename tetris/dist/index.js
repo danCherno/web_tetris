@@ -75,7 +75,7 @@ var Piece = /** @class */ (function () {
         this.type = type;
         this.buildPiece();
         this.isMoving = true;
-        curPiece = setInterval(function () { return _this.dropPiece(); }, 100);
+        this.eventNumber = setInterval(function () { return _this.dropPiece(); }, 1000);
     }
     Piece.prototype.buildPiece = function () {
         switch (this.type) {
@@ -195,12 +195,30 @@ var Piece = /** @class */ (function () {
             var block = _a[_i];
             if (block.isBlockUnder()) {
                 this.isMoving = false;
-                clearInterval(curPiece);
-                generatePiece();
+                clearInterval(this.eventNumber);
+                curPiece = generatePiece();
                 return;
             }
         }
         ;
+    };
+    Piece.prototype.movePieceLeft = function () {
+        for (var _i = 0, _a = this.blocks; _i < _a.length; _i++) {
+            var block = _a[_i];
+            if (block.getPosition()[1] == 0)
+                return;
+        }
+        this.blocks.forEach(function (block) { return block.right(); });
+        this.blocks.forEach(function (block) { return block.renderBlock(); });
+    };
+    Piece.prototype.movePieceRight = function () {
+        for (var _i = 0, _a = this.blocks; _i < _a.length; _i++) {
+            var block = _a[_i];
+            if (block.getPosition()[1] == 9)
+                return;
+        }
+        this.blocks.forEach(function (block) { return block.left(); });
+        this.blocks.forEach(function (block) { return block.renderBlock(); });
     };
     return Piece;
 }());
@@ -224,10 +242,19 @@ function renderGridToHTML(grid) {
 function generatePiece() {
     var pieces = ["I", "Z", "S", "L", "J", "O", "T"];
     var randomPiece = pieces[Math.floor(Math.random() * pieces.length)];
-    new Piece(randomPiece);
+    return new Piece(randomPiece);
 }
 function main() {
-    generatePiece();
+    curPiece = generatePiece();
+    // movement key listeners
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "ArrowRight")
+            curPiece.movePieceRight();
+        if (event.key === "ArrowLeft")
+            curPiece.movePieceLeft();
+        if (event.key === "ArrowDown")
+            curPiece.dropPiece();
+    });
 }
 main();
 //document.getElementById("gameLayout")!.innerHTML = renderGridToHTML(gameGrid);
