@@ -198,6 +198,7 @@ var Piece = /** @class */ (function () {
                 this.isMoving = false;
                 clearInterval(this.eventNumber);
                 curPiece = generatePiece();
+                checkFullLine();
                 return;
             }
         }
@@ -232,9 +233,15 @@ var Piece = /** @class */ (function () {
     return Piece;
 }());
 function clearLine(row) {
-    gameGrid.splice(row, 1);
-    gameGrid.push(Array(10).fill("1"));
+    gameGrid.splice(row, 1); // remove the row
+    gameGrid.push(Array(10).fill("0")); // add a new row at the bottom
     score++;
+}
+function checkFullLine() {
+    gameGrid.forEach(function (row, rowIndex) {
+        if (row.every(function (cell) { return cell != "0"; }))
+            clearLine(rowIndex);
+    });
 }
 function renderGridToHTML(grid) {
     var html = "<table>";

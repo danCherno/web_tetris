@@ -270,6 +270,7 @@ case "T":
           this.isMoving = false;
           clearInterval(this.eventNumber);
           curPiece = generatePiece();
+          checkFullLine();
           return;
         }
       };
@@ -302,10 +303,19 @@ case "T":
 }
 
 function clearLine(row: number): void {
-  gameGrid.splice(row, 1);
-  gameGrid.push(Array(10).fill("1"));
+  gameGrid.splice(row, 1); // remove the row
+  gameGrid.push(Array(10).fill("0")); // add a new row at the bottom
   score++;
 }
+
+function checkFullLine(): void
+{
+  gameGrid.forEach((row, rowIndex) => 
+  {
+    if (row.every((cell) => cell != "0")) clearLine(rowIndex);
+  });
+}
+
 function renderGridToHTML(grid: string[][]): string {
   let html = "<table>";
   grid.forEach((row) => {
