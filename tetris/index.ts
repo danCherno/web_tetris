@@ -62,21 +62,20 @@ class Block
   down(): void {
     gameGrid[this.position[0]][this.position[1]] = "0";
     this.position[0]--;
-    //todo: update for css grid
+
+    this.renderBlock();
   }
 
   right(): void {
     gameGrid[this.position[0]][this.position[1]] = "0";
     this.position[1]--;
-
-    //todo: update for css grid
+    this.renderBlock();
   }
 
   left(): void {
     gameGrid[this.position[0]][this.position[1]] = "0";
     this.position[1]++;
-
-    //todo: update for css grid
+    this.renderBlock();
   }
 
   isBlockUnder(): boolean {
@@ -89,7 +88,13 @@ class Block
   renderBlock(): void 
   {
     gameGrid[this.position[0]][this.position[1]] = this.id;
-    document.getElementById("gameLayout")!.innerHTML = renderGridToHTML(gameGrid);
+
+    this.blockElement.style.gridColumnStart = `${this.position[1] + 1}`;
+    this.blockElement.style.gridColumnEnd = `${this.position[1] + 2}`;
+    this.blockElement.style.gridRowStart = `${22 - this.position[0]}`;
+    this.blockElement.style.gridRowEnd = `${22 - this.position[0] + 1}`;
+
+    //document.getElementById("gameLayout")!.innerHTML = renderGridToHTML(gameGrid);
   }
 }
 
@@ -258,7 +263,6 @@ case "T":
     if (!this.isMoving) return;
 
     this.blocks.forEach((block) => block.down());
-    this.blocks.forEach((block) => block.renderBlock());
   }
 
   landPiece(): void 
@@ -280,12 +284,12 @@ case "T":
     for (let block of this.blocks)
     {
       if (block.getPosition()[1] == 0) return;
+
       const nextBlockId = (gameGrid[block.getPosition()[0]][block.getPosition()[1] - 1]);
       if (nextBlockId !="0") if (nextBlockId.slice(3) != this.id) return;
     }
 
     this.blocks.forEach((block) => block.right());
-    this.blocks.forEach((block) => block.renderBlock());
   }
 
   movePieceRight(): void
@@ -293,18 +297,22 @@ case "T":
     for (let block of this.blocks)
     {
       if (block.getPosition()[1] == 9) return;
+
       const nextBlockId = (gameGrid[block.getPosition()[0]][block.getPosition()[1] + 1]);
       if (nextBlockId !="0") if (nextBlockId.slice(3) != this.id) return;
     }
 
     this.blocks.forEach((block) => block.left());
-    this.blocks.forEach((block) => block.renderBlock());
   }
 }
 
 function clearLine(row: number): void {
   gameGrid.splice(row, 1); // remove the row
   gameGrid.push(Array(10).fill("0")); // add a new row at the bottom
+
+  //todo make this updated in html
+
+
   score++;
 }
 
@@ -316,24 +324,32 @@ function checkFullLine(): void
   });
 }
 
-function renderGridToHTML(grid: string[][]): string {
-  let html = "<table>";
-  grid.forEach((row) => {
-    html += "<tr>";
-    row.forEach((cell) => {
-      html += `<td>${cell}</td>`;
-    });
-    html += "</tr>";
-  });
-  html += "</table>";
-  return html;
-}
+// function renderGridToHTML(grid: string[][]): string {
+//   let html = "<table>";
+//   grid.forEach((row) => {
+//     html += "<tr>";
+//     row.forEach((cell) => {
+//       html += `<td>${cell}</td>`;
+//     });
+//     html += "</tr>";
+//   });
+//   html += "</table>";
+//   return html;
+// }
 
 function generatePiece(): Piece
 {
   const pieces = ["I", "Z", "S", "L", "J", "O", "T"];
   const randomPiece = pieces[Math.floor(Math.random() * pieces.length)];
   return new Piece(randomPiece);
+}
+
+//prints the grid, replacing 1 for every id in the grid
+function logGrid(): void
+{
+  const testGrid = gameGrid.map((row) => row.map((cell) => cell === "0"? "0" : "1"));
+
+  console.log(testGrid);
 }
 
 
