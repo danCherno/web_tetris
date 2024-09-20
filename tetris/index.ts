@@ -64,26 +64,34 @@ class Block
   down(): void {
     gameGrid[this.position[0]][this.position[1]] = "0";
     this.position[0]--;
-    //todo: update for css grid
   }
 
   right(): void {
     gameGrid[this.position[0]][this.position[1]] = "0";
     this.position[1]--;
-
-    //todo: update for css grid
   }
 
   left(): void {
     gameGrid[this.position[0]][this.position[1]] = "0";
     this.position[1]++;
 
-    //todo: update for css grid
   }
 
+  rotate(center: [number, number]): void 
+{
+    const offsetX = this.position[0] - center[0]; // X offset from center
+    const offsetY = this.position[1] - center[1]; // Y offset from center
+
+    gameGrid[this.position[0]][this.position[1]] = "0"; // Clear old position on the grid
+
+    this.position[0] = center[0] + offsetY;
+    this.position[1] = center[1] - offsetX;
+  }
+
+
   isBlockUnder(): boolean {
-    if (!this.isImportant) return false;
     if (0 == this.position[0]) return true;
+    if (this.id.slice(3) === gameGrid[this.position[0] - 1][this.position[1]].slice(3)) return false;
     if (gameGrid[this.position[0] - 1][this.position[1]] != "0") return true;
     return false;
   }
@@ -110,7 +118,6 @@ class Piece
     this.type = type;
     this.isMoving = true;
     this.buildPiece();
-
     this.eventNumber = setInterval(() => this.dropPiece(), 1000);
   }
 
@@ -302,6 +309,14 @@ case "T":
     this.blocks.forEach((block) => block.left());
     this.blocks.forEach((block) => block.renderBlock());
   }
+  rotatePiece(): void
+  {
+    const centerBlock = this.blocks[1].getPosition();
+
+    this.blocks.forEach((block) => {block.rotate(centerBlock); });
+
+    this.blocks.forEach((block) => block.renderBlock());
+  }
 }
 
 function clearLine(row: number): void {
@@ -344,9 +359,10 @@ function main(): void
   curPiece = generatePiece();
   // movement key listeners
   document.addEventListener("keydown", (event) => {
-    if (event.key === "ArrowRight") curPiece!.movePieceRight();
-    if (event.key === "ArrowLeft") curPiece!.movePieceLeft();
-    if (event.key === "ArrowDown") curPiece!.dropPiece();
+    if (event.key === "d") curPiece!.movePieceRight();
+    if (event.key === "a") curPiece!.movePieceLeft();
+    if (event.key === "s") curPiece!.dropPiece();
+    if (event.key === "e") curPiece!.rotatePiece();
   });
 }
 main();

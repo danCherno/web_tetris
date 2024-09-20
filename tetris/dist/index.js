@@ -44,23 +44,27 @@ var Block = /** @class */ (function () {
     Block.prototype.down = function () {
         gameGrid[this.position[0]][this.position[1]] = "0";
         this.position[0]--;
-        //todo: update for css grid
     };
     Block.prototype.right = function () {
         gameGrid[this.position[0]][this.position[1]] = "0";
         this.position[1]--;
-        //todo: update for css grid
     };
     Block.prototype.left = function () {
         gameGrid[this.position[0]][this.position[1]] = "0";
         this.position[1]++;
-        //todo: update for css grid
+    };
+    Block.prototype.rotate = function (center) {
+        var offsetX = this.position[0] - center[0]; // X offset from center
+        var offsetY = this.position[1] - center[1]; // Y offset from center
+        gameGrid[this.position[0]][this.position[1]] = "0"; // Clear old position on the grid
+        this.position[0] = center[0] + offsetY;
+        this.position[1] = center[1] - offsetX;
     };
     Block.prototype.isBlockUnder = function () {
-        if (!this.isImportant)
-            return false;
         if (0 == this.position[0])
             return true;
+        if (this.id.slice(3) === gameGrid[this.position[0] - 1][this.position[1]].slice(3))
+            return false;
         if (gameGrid[this.position[0] - 1][this.position[1]] != "0")
             return true;
         return false;
@@ -232,6 +236,11 @@ var Piece = /** @class */ (function () {
         this.blocks.forEach(function (block) { return block.left(); });
         this.blocks.forEach(function (block) { return block.renderBlock(); });
     };
+    Piece.prototype.rotatePiece = function () {
+        var centerBlock = this.blocks[1].getPosition();
+        this.blocks.forEach(function (block) { block.rotate(centerBlock); });
+        this.blocks.forEach(function (block) { return block.renderBlock(); });
+    };
     return Piece;
 }());
 function clearLine(row) {
@@ -266,12 +275,14 @@ function main() {
     curPiece = generatePiece();
     // movement key listeners
     document.addEventListener("keydown", function (event) {
-        if (event.key === "ArrowRight")
+        if (event.key === "d")
             curPiece.movePieceRight();
-        if (event.key === "ArrowLeft")
+        if (event.key === "a")
             curPiece.movePieceLeft();
-        if (event.key === "ArrowDown")
+        if (event.key === "s")
             curPiece.dropPiece();
+        if (event.key === "e")
+            curPiece.rotatePiece();
     });
 }
 main();
