@@ -2,6 +2,7 @@
 var gameGrid = Array(22).fill(null).map(function () { return Array(10).fill('0'); });
 var score = 0;
 var curPiece;
+var colorLibrary = {};
 // clear line function (row index) slice the row out and create a new row of zeros at the end
 // gameGrid[5] = Array(10).fill('1'); //testing
 var Block = /** @class */ (function () {
@@ -17,6 +18,7 @@ var Block = /** @class */ (function () {
         this.blockElement.className = "block";
         this.blockElement.id = this.id;
         this.blockElement.style.backgroundColor = this.color;
+        colorLibrary[this.id] = this.color;
         document.getElementById("gameLayout").appendChild(this.blockElement); // adding block to the game layout (fyi, ! is for ignoring null values)
     }
     // getters
@@ -42,17 +44,17 @@ var Block = /** @class */ (function () {
     Block.prototype.down = function () {
         gameGrid[this.position[0]][this.position[1]] = "0";
         this.position[0]--;
-        this.renderBlock();
+        //todo: update for css grid
     };
     Block.prototype.right = function () {
         gameGrid[this.position[0]][this.position[1]] = "0";
         this.position[1]--;
-        this.renderBlock();
+        //todo: update for css grid
     };
     Block.prototype.left = function () {
         gameGrid[this.position[0]][this.position[1]] = "0";
         this.position[1]++;
-        this.renderBlock();
+        //todo: update for css grid
     };
     Block.prototype.isBlockUnder = function () {
         if (!this.isImportant)
@@ -65,11 +67,7 @@ var Block = /** @class */ (function () {
     };
     Block.prototype.renderBlock = function () {
         gameGrid[this.position[0]][this.position[1]] = this.id;
-        this.blockElement.style.gridColumnStart = "" + (this.position[1] + 1);
-        this.blockElement.style.gridColumnEnd = "" + (this.position[1] + 2);
-        this.blockElement.style.gridRowStart = "" + (22 - this.position[0]);
-        this.blockElement.style.gridRowEnd = "" + (22 - this.position[0] + 1);
-        //document.getElementById("gameLayout")!.innerHTML = renderGridToHTML(gameGrid);
+        document.getElementById("gameLayout").innerHTML = renderGridToHTML(gameGrid);
     };
     return Block;
 }());
@@ -193,6 +191,7 @@ var Piece = /** @class */ (function () {
         if (!this.isMoving)
             return;
         this.blocks.forEach(function (block) { return block.down(); });
+        this.blocks.forEach(function (block) { return block.renderBlock(); });
     };
     Piece.prototype.landPiece = function () {
         for (var _i = 0, _a = this.blocks; _i < _a.length; _i++) {
@@ -218,6 +217,7 @@ var Piece = /** @class */ (function () {
                     return;
         }
         this.blocks.forEach(function (block) { return block.right(); });
+        this.blocks.forEach(function (block) { return block.renderBlock(); });
     };
     Piece.prototype.movePieceRight = function () {
         for (var _i = 0, _a = this.blocks; _i < _a.length; _i++) {
@@ -230,13 +230,13 @@ var Piece = /** @class */ (function () {
                     return;
         }
         this.blocks.forEach(function (block) { return block.left(); });
+        this.blocks.forEach(function (block) { return block.renderBlock(); });
     };
     return Piece;
 }());
 function clearLine(row) {
     gameGrid.splice(row, 1); // remove the row
     gameGrid.push(Array(10).fill("0")); // add a new row at the bottom
-    //todo make this updated in html
     score++;
 }
 function checkFullLine() {
@@ -245,27 +245,22 @@ function checkFullLine() {
             clearLine(rowIndex);
     });
 }
-// function renderGridToHTML(grid: string[][]): string {
-//   let html = "<table>";
-//   grid.forEach((row) => {
-//     html += "<tr>";
-//     row.forEach((cell) => {
-//       html += `<td>${cell}</td>`;
-//     });
-//     html += "</tr>";
-//   });
-//   html += "</table>";
-//   return html;
-// }
+function renderGridToHTML(grid) {
+    var html = "<table>";
+    grid.forEach(function (row) {
+        html += "<tr>";
+        row.forEach(function (cell) {
+            html += "<td style=\"background-color:" + colorLibrary[cell] + ";\"></td>";
+        });
+        html += "</tr>";
+    });
+    html += "</table>";
+    return html;
+}
 function generatePiece() {
     var pieces = ["I", "Z", "S", "L", "J", "O", "T"];
     var randomPiece = pieces[Math.floor(Math.random() * pieces.length)];
     return new Piece(randomPiece);
-}
-//prints the grid, replacing 1 for every id in the grid
-function logGrid() {
-    var testGrid = gameGrid.map(function (row) { return row.map(function (cell) { return cell === "0" ? "0" : "1"; }); });
-    console.log(testGrid);
 }
 function main() {
     curPiece = generatePiece();

@@ -2,6 +2,7 @@
 const gameGrid: string[][] = Array(22).fill(null).map(() => Array(10).fill('0'));
 let score: number = 0;
 let curPiece: Piece;
+const colorLibrary = {} ;
 
 // clear line function (row index) slice the row out and create a new row of zeros at the end
 // gameGrid[5] = Array(10).fill('1'); //testing
@@ -29,6 +30,7 @@ class Block
     this.blockElement.className = `block`;
     this.blockElement.id = this.id;
     this.blockElement.style.backgroundColor = this.color;
+    colorLibrary[this.id] = this.color
     document.getElementById("gameLayout")!.appendChild(this.blockElement); // adding block to the game layout (fyi, ! is for ignoring null values)
   }
   // getters
@@ -62,20 +64,21 @@ class Block
   down(): void {
     gameGrid[this.position[0]][this.position[1]] = "0";
     this.position[0]--;
-
-    this.renderBlock();
+    //todo: update for css grid
   }
 
   right(): void {
     gameGrid[this.position[0]][this.position[1]] = "0";
     this.position[1]--;
-    this.renderBlock();
+
+    //todo: update for css grid
   }
 
   left(): void {
     gameGrid[this.position[0]][this.position[1]] = "0";
     this.position[1]++;
-    this.renderBlock();
+
+    //todo: update for css grid
   }
 
   isBlockUnder(): boolean {
@@ -88,13 +91,7 @@ class Block
   renderBlock(): void 
   {
     gameGrid[this.position[0]][this.position[1]] = this.id;
-
-    this.blockElement.style.gridColumnStart = `${this.position[1] + 1}`;
-    this.blockElement.style.gridColumnEnd = `${this.position[1] + 2}`;
-    this.blockElement.style.gridRowStart = `${22 - this.position[0]}`;
-    this.blockElement.style.gridRowEnd = `${22 - this.position[0] + 1}`;
-
-    //document.getElementById("gameLayout")!.innerHTML = renderGridToHTML(gameGrid);
+    document.getElementById("gameLayout")!.innerHTML = renderGridToHTML(gameGrid);
   }
 }
 
@@ -263,6 +260,7 @@ case "T":
     if (!this.isMoving) return;
 
     this.blocks.forEach((block) => block.down());
+    this.blocks.forEach((block) => block.renderBlock());
   }
 
   landPiece(): void 
@@ -284,12 +282,12 @@ case "T":
     for (let block of this.blocks)
     {
       if (block.getPosition()[1] == 0) return;
-
       const nextBlockId = (gameGrid[block.getPosition()[0]][block.getPosition()[1] - 1]);
       if (nextBlockId !="0") if (nextBlockId.slice(3) != this.id) return;
     }
 
     this.blocks.forEach((block) => block.right());
+    this.blocks.forEach((block) => block.renderBlock());
   }
 
   movePieceRight(): void
@@ -297,22 +295,18 @@ case "T":
     for (let block of this.blocks)
     {
       if (block.getPosition()[1] == 9) return;
-
       const nextBlockId = (gameGrid[block.getPosition()[0]][block.getPosition()[1] + 1]);
       if (nextBlockId !="0") if (nextBlockId.slice(3) != this.id) return;
     }
 
     this.blocks.forEach((block) => block.left());
+    this.blocks.forEach((block) => block.renderBlock());
   }
 }
 
 function clearLine(row: number): void {
   gameGrid.splice(row, 1); // remove the row
   gameGrid.push(Array(10).fill("0")); // add a new row at the bottom
-
-  //todo make this updated in html
-
-
   score++;
 }
 
@@ -324,32 +318,24 @@ function checkFullLine(): void
   });
 }
 
-// function renderGridToHTML(grid: string[][]): string {
-//   let html = "<table>";
-//   grid.forEach((row) => {
-//     html += "<tr>";
-//     row.forEach((cell) => {
-//       html += `<td>${cell}</td>`;
-//     });
-//     html += "</tr>";
-//   });
-//   html += "</table>";
-//   return html;
-// }
+function renderGridToHTML(grid: string[][]): string {
+  let html = "<table>";
+  grid.forEach((row) => {
+    html += "<tr>";
+    row.forEach((cell) => {
+      html += `<td style="background-color:${colorLibrary[cell]};"></td>`;
+    });
+    html += "</tr>";
+  });
+  html += "</table>";
+  return html;
+}
 
 function generatePiece(): Piece
 {
   const pieces = ["I", "Z", "S", "L", "J", "O", "T"];
   const randomPiece = pieces[Math.floor(Math.random() * pieces.length)];
   return new Piece(randomPiece);
-}
-
-//prints the grid, replacing 1 for every id in the grid
-function logGrid(): void
-{
-  const testGrid = gameGrid.map((row) => row.map((cell) => cell === "0"? "0" : "1"));
-
-  console.log(testGrid);
 }
 
 

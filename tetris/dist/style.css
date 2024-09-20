@@ -6,9 +6,7 @@
   --color-quinary: rgb(107, 107, 107);
   --color-text-dark: #333;
   --color-text-lite: #faf6f6;
-  --block-size: 3vh;
-  --game-width: 10;
-  --game-height: 22;
+  --block-size: 1.5rem;
 }
 
 body {
@@ -36,25 +34,14 @@ body .gameInformation {
   height: 10vh;
 }
 body #gameLayout {
-  display: inline-grid;
-  grid-template-columns: repeat(var(--game-width), var(--block-size));
-  grid-template-rows: repeat(var(--game-height), var(--block-size));
-  background-image: linear-gradient(to right, black 1px, transparent 1px), linear-gradient(to bottom, black 1px, transparent 1px);
-  gap: 0;
+  display: grid;
+  gap: 5px;
   justify-content: center;
-  margin: 0;
-  padding: 0;
+  margin: 2%;
   align-self: center;
-  width: calc(var(--game-width) * var(--block-size));
-  height: calc(var(--game-height) * var(--block-size));
-  background-size: var(--block-size) var(--block-size);
+  width: 80%;
   background-color: var(--color-quinary);
   border: 2px solid var(--color-primary);
-}
-body #gameLayout .block {
-  width: var(--block-size);
-  height: var(--block-size);
-  border: 1px solid;
 }
 body table {
   border-collapse: collapse;
