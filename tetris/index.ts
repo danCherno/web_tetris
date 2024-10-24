@@ -246,10 +246,10 @@ class Piece
             X */
 case "T":
         this.blocks = [
-          new Block("green", "A", true, this.id),
-          new Block("green", "B", false, this.id),
-          new Block("green", "C", true, this.id),
-          new Block("green", "D", true, this.id),
+          new Block("red", "A", true, this.id),
+          new Block("red", "B", false, this.id),
+          new Block("red", "C", true, this.id),
+          new Block("red", "D", true, this.id),
         ];
 
         this.blocks[0].left();
@@ -368,8 +368,4 @@ function main(): void
 main();
 
 
-//document.getElementById("gameLayout")!.innerHTML = renderGridToHTML(gameGrid);
-
-// clearLine(5); //testing
-
-// render main
+//hi!
